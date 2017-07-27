@@ -4,6 +4,7 @@ tmp/
 run/
 build/
 bin/
+.settings/
 .classpath
 .project
 eclipse/
