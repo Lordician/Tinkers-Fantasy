@@ -1,0 +1,17 @@
+[{
+    "modid": "tinkersfantasy",
+    "name": "Tinkers' Fantasy",
+    "description": "Adding more (fantasy) to the Tinkers' Toolkit.",
+    "version": "1.11.2-1.0",
+    "mcversion": "1.11.2",
+    "url": "",
+    "updateUrl": "",
+    "authorList": [
+      "Lordician"
+    ],
+    "credits": "Tinkers' Construct & Mantle team",
+    "logoFile": "",
+    "screenshots": [],
+    "parent":"",
+    "dependencies": []
+}]
