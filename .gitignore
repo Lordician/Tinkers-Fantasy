@@ -2,6 +2,11 @@
 bin/
 tmp/
 run/
+build/
+bin/
+.classpath
+.project
+eclipse/
 *.tmp
 *.bak
 *.swp
