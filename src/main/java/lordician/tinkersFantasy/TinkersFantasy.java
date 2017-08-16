@@ -10,26 +10,22 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.util.Random;
 
-@Mod(modid = TinkersFantasy.MODID,
-name = TinkersFantasy.MOD_NAME,
-version = TinkersFantasy.VERSION)
+@Mod(modid = ModInfo.MODID,
+name = ModInfo.NAME,
+version = ModInfo.VERSION)
 public class TinkersFantasy {
-	
-	public static final String MODID = "tinkersfantasy";
-	public static final String VERSION = "${version}";
-	public static final String MOD_NAME = "Tinkers' Fantasy";
 	
 	public static final Random random = new Random();
 	
 	@SidedProxy(serverSide = "lordician.tinkersFantasy.common.CommonProxy", clientSide = "lordician.tinkersFantasy.common.ClientProxy")
 	public static CommonProxy proxy;
 	
-	@Mod.Instance(MODID)
+	@Mod.Instance(ModInfo.MODID)
 	public static TinkersFantasy instance;
 	
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		System.out.println(MOD_NAME + " is loading!");
+		System.out.println(ModInfo.NAME + " is loading!");
 		System.out.println("Called method: preInit");
 		TinkersFantasy.proxy.preInit(event);
 		ItemBaseMagicTools.init();
