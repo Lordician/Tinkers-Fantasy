@@ -9,7 +9,10 @@ public class ItemBaseMagicTools {
 	public static ItemMagicWand magicWand;
 	
 	public static void init() {
-		magicWand = ItemBaseMagicTools.register(new ItemMagicWand("teststaff").setCreativeTab(CreativeTabs.COMBAT));
+		magicWand = new ItemMagicWand("teststaff");
+		magicWand.setRegistryName("teststaff");
+		magicWand.setCreativeTab(CreativeTabs.COMBAT);
+		ItemBaseMagicTools.register(magicWand);
 	}
 	
 	

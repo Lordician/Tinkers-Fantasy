@@ -11,7 +11,6 @@ public class ItemMagicWand extends Item implements ItemModelProvider {
 	public ItemMagicWand(String name) {
 		this.name = name;
 		this.setUnlocalizedName(name);
-		this.setRegistryName(name);
 		this.setCreativeTab(CreativeTabs.COMBAT);
 		
 		this.maxStackSize = 1;
