@@ -158,7 +158,7 @@ public class Naginata extends SwordCore implements IExtendedReach
 				boolean yawCheck = (entityRelativeYaw <= arc / 2 && entityRelativeYaw >= -arc / 2) || (entityRelativeYaw >= 360 - arc / 2 || entityRelativeYaw <= -360 + arc / 2);
 				boolean pitchCheck = (entityRelativePitch <= arc / 2 && entityRelativePitch >= -arc / 2) || (entityRelativePitch >= 360 - arc / 2 || entityRelativePitch <= -360 + arc / 2);
 
-	            if (entitylivingbase != playerIn && !playerIn.isOnSameTeam(entitylivingbase)
+				if (entitylivingbase != playerIn && !playerIn.isOnSameTeam(entitylivingbase)
 						&& distanceTo <= reach && yawCheck && pitchCheck)
 				{
 					entitylivingbase.knockBack(playerIn, 0.4F,
