@@ -1,21 +1,17 @@
 package lordician.tinkersFantasy.tools.melee.item;
 
 import java.util.List;
-
 import javax.annotation.Nonnull;
 
 import lordician.tinkersFantasy.common.item.IExtendedReach;
+import lordician.tinkersFantasy.tools.melee.TinkerFantasyMeleeWeapons;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -29,7 +25,6 @@ import slimeknights.tconstruct.library.tinkering.Category;
 import slimeknights.tconstruct.library.tinkering.PartMaterialType;
 import slimeknights.tconstruct.library.tools.SwordCore;
 import slimeknights.tconstruct.library.tools.ToolNBT;
-import slimeknights.tconstruct.library.utils.TagUtil;
 import slimeknights.tconstruct.library.utils.ToolHelper;
 import slimeknights.tconstruct.tools.TinkerTools;
 import net.minecraft.util.math.MathHelper;
@@ -40,9 +35,6 @@ public class Naginata extends SwordCore implements IExtendedReach
 	public static final float ATTACK_ADDITION = 1.0f;
 	
 	public static double defaultAttackSpeed = 1.4d;
-	private double currAttackSpeed = defaultAttackSpeed;
-	
-	public static final AttributeModifier cooldown_debuff = new AttributeModifier("naginata_attackspeed_down", -Naginata.defaultAttackSpeed/1.5, 0);
 	
 	public Naginata(String name)
 	{
@@ -124,9 +116,8 @@ public class Naginata extends SwordCore implements IExtendedReach
 		}
 		playerIn.setActiveHand(hand);
 		
-		double d0 = (double) (playerIn.distanceWalkedModified - playerIn.prevDistanceWalkedModified);
-		boolean flag1 = playerIn.fallDistance > 0.0F && !playerIn.onGround && !playerIn.isOnLadder() && !playerIn.isInWater() && !playerIn.isPotionActive(MobEffects.BLINDNESS);// && !playerIn.isRiding(); //We accept riding with the Naginata Sweep Alt-Attack
-		if (!flag1 && this.readyForSpecialAttack(playerIn) && !playerIn.isSprinting() && d0 <= (double) playerIn.getAIMoveSpeed())
+		boolean flag1 = playerIn.fallDistance > 0.0F && !playerIn.onGround && !playerIn.isOnLadder() && !playerIn.isInWater() && !playerIn.isPotionActive(MobEffects.BLINDNESS) && !playerIn.isRiding(); //We accept riding with the Naginata Sweep Alt-Attack
+		if (!flag1 && this.readyForSpecialAttack(playerIn) && !playerIn.isSprinting())
 		{
 			double reach = (double)this.getReach();
 			List<EntityLivingBase> hitEnemies = playerIn.getEntityWorld().getEntitiesWithinAABB(EntityLivingBase.class, playerIn.getEntityBoundingBox().expand(reach, reach, reach));
@@ -169,9 +160,9 @@ public class Naginata extends SwordCore implements IExtendedReach
 			}
 			
 			playerIn.getEntityWorld().playSound(null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, playerIn.getSoundCategory(), 1.0f, 1.0f);
-			if (!playerIn.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).hasModifier(cooldown_debuff))
+			if (!playerIn.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).hasModifier(TinkerFantasyMeleeWeapons.cooldown_debuff))
 			{
-				playerIn.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).applyModifier(cooldown_debuff);
+				playerIn.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).applyModifier(TinkerFantasyMeleeWeapons.cooldown_debuff);
 				
 			}
 			playerIn.swingArm(hand);
@@ -193,9 +184,15 @@ public class Naginata extends SwordCore implements IExtendedReach
 			if (((EntityPlayer) entityIn).getCooledAttackStrength(0.5F) > 0.9F)
 			{
 				//Cooldown regen'd, remove naginata attackspeed debuff
-				if (((EntityLivingBase) entityIn).getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).hasModifier(cooldown_debuff))
-				((EntityLivingBase) entityIn).getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).removeModifier(cooldown_debuff);
+				if (((EntityLivingBase) entityIn).getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).hasModifier(TinkerFantasyMeleeWeapons.cooldown_debuff))
+				{
+					System.out.println("Removing de-buff.");
+					((EntityLivingBase) entityIn).getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).removeModifier(TinkerFantasyMeleeWeapons.cooldown_debuff);
+				}
+				else
+					System.out.println(((EntityLivingBase) entityIn).getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getModifiers());
 			}
+			System.out.println(((EntityLivingBase) entityIn).getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getAttributeValue());
 		}
 		super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
 	}

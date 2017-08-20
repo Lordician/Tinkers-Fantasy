@@ -1,9 +1,12 @@
 package lordician.tinkersFantasy.tools.melee;
 
+import java.util.UUID;
+
 import com.google.common.eventbus.Subscribe;
 
 import lordician.tinkersFantasy.common.CommonProxy;
 import lordician.tinkersFantasy.tools.melee.item.Naginata;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -19,11 +22,14 @@ public class TinkerFantasyMeleeWeapons
 	
 	public static ToolCore naginata;
 	
+	public static final String cooldown_debuff_name = "naginata_attackspeed_down";
+	public static AttributeModifier cooldown_debuff;
+	
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		registerTools();
-		
+		cooldown_debuff = new AttributeModifier(UUID.nameUUIDFromBytes(cooldown_debuff_name.getBytes()), cooldown_debuff_name, -Naginata.defaultAttackSpeed/1.5, 0);
 		proxy.preInit(event);
 	}
 	
