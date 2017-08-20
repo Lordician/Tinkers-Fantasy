@@ -135,30 +135,30 @@ public class Naginata extends SwordCore implements IExtendedReach
 				double distanceTo = playerIn.getDistanceToEntity(entitylivingbase);
 				//calculations needed to check if the target is in front of the player.
 				float entityHitYaw = (float) ((Math.atan2(entitylivingbase.posZ - playerIn.posZ, entitylivingbase.posX - playerIn.posX) * (180 / Math.PI) - 90) % 360);
-	            float entityAttackingYaw = playerIn.rotationYaw % 360;
-	            if (entityHitYaw < 0) {
-	                entityHitYaw += 360;
-	            }
-	            if (entityAttackingYaw < 0) {
-	                entityAttackingYaw += 360;
-	            }
-	            float entityRelativeYaw = entityHitYaw - entityAttackingYaw;
-
-	            float xzDistance = (float) Math.sqrt((entitylivingbase.posZ - playerIn.posZ) * (entitylivingbase.posZ - playerIn.posZ) + (entitylivingbase.posX - playerIn.posX) * (entitylivingbase.posX - playerIn.posX));
-	            float entityHitPitch = (float) ((Math.atan2((entitylivingbase.posY - playerIn.posY), xzDistance) * (180 / Math.PI)) % 360);
-	            float entityAttackingPitch = -playerIn.rotationPitch % 360;
-	            if (entityHitPitch < 0) {
-	                entityHitPitch += 360;
-	            }
-	            if (entityAttackingPitch < 0) {
-	                entityAttackingPitch += 360;
-	            }
-	            float entityRelativePitch = entityHitPitch - entityAttackingPitch;
-	            float arc = 90.0f;
-	            boolean yawCheck = (entityRelativeYaw <= arc / 2 && entityRelativeYaw >= -arc / 2) || (entityRelativeYaw >= 360 - arc / 2 || entityRelativeYaw <= -360 + arc / 2);
-	            boolean pitchCheck = (entityRelativePitch <= arc / 2 && entityRelativePitch >= -arc / 2) || (entityRelativePitch >= 360 - arc / 2 || entityRelativePitch <= -360 + arc / 2);
+				float entityAttackingYaw = playerIn.rotationYaw % 360;
+				if (entityHitYaw < 0) {
+				    entityHitYaw += 360;
+				}
+				if (entityAttackingYaw < 0) {
+				    entityAttackingYaw += 360;
+				}
+				float entityRelativeYaw = entityHitYaw - entityAttackingYaw;
 				
-				if (entitylivingbase != playerIn && !playerIn.isOnSameTeam(entitylivingbase)
+				float xzDistance = (float) Math.sqrt((entitylivingbase.posZ - playerIn.posZ) * (entitylivingbase.posZ - playerIn.posZ) + (entitylivingbase.posX - playerIn.posX) * (entitylivingbase.posX - playerIn.posX));
+				float entityHitPitch = (float) ((Math.atan2((entitylivingbase.posY - playerIn.posY), xzDistance) * (180 / Math.PI)) % 360);
+				float entityAttackingPitch = -playerIn.rotationPitch % 360;
+				if (entityHitPitch < 0) {
+				    entityHitPitch += 360;
+				}
+				if (entityAttackingPitch < 0) {
+				    entityAttackingPitch += 360;
+				}
+				float entityRelativePitch = entityHitPitch - entityAttackingPitch;
+				float arc = 90.0f;
+				boolean yawCheck = (entityRelativeYaw <= arc / 2 && entityRelativeYaw >= -arc / 2) || (entityRelativeYaw >= 360 - arc / 2 || entityRelativeYaw <= -360 + arc / 2);
+				boolean pitchCheck = (entityRelativePitch <= arc / 2 && entityRelativePitch >= -arc / 2) || (entityRelativePitch >= 360 - arc / 2 || entityRelativePitch <= -360 + arc / 2);
+
+	            if (entitylivingbase != playerIn && !playerIn.isOnSameTeam(entitylivingbase)
 						&& distanceTo <= reach && yawCheck && pitchCheck)
 				{
 					entitylivingbase.knockBack(playerIn, 0.4F,
