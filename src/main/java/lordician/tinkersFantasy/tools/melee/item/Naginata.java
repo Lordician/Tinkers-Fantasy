@@ -111,45 +111,31 @@ public class Naginata extends SwordCore implements IExtendedReach
 	}
 	
 	//Sweep Attack Implementation!
-	@Nonnull
-	@Override
-	public EnumAction getItemUseAction(ItemStack stack)
-	{
-		return EnumAction.NONE;
-	}
-	@Override
-	public int getMaxItemUseDuration(ItemStack stack)
-	{
-		return 200;
-	}
 	
 	@Nonnull
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
 	{
 		ItemStack itemStackIn = playerIn.getHeldItem(hand);
+		
+		if (ToolHelper.isBroken(itemStackIn))
+		{
+			return ActionResult.newResult(EnumActionResult.FAIL, itemStackIn);
+		}
 		playerIn.setActiveHand(hand);
 		
-		return ActionResult.newResult(EnumActionResult.PASS, itemStackIn);
-	}
-	
-	@Override
-	public void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase player, int timeLeft)
-	{
-		int time = this.getMaxItemUseDuration(stack) - timeLeft;
-		
-		double d0 = (double) (player.distanceWalkedModified - player.prevDistanceWalkedModified);
-		boolean flag2 = player.fallDistance > 0.0F && !player.onGround && !player.isOnLadder() && !player.isInWater() && !player.isPotionActive(MobEffects.BLINDNESS) && !player.isRiding();
-		if (time > 1 && !ToolHelper.isBroken(stack) && this.readyForSpecialAttack(player) && !player.isSwingInProgress && !player.isSprinting() && !flag2 && d0 < (double) player.getAIMoveSpeed())
+		double d0 = (double) (playerIn.distanceWalkedModified - playerIn.prevDistanceWalkedModified);
+		boolean flag1 = playerIn.fallDistance > 0.0F && !playerIn.onGround && !playerIn.isOnLadder() && !playerIn.isInWater() && !playerIn.isPotionActive(MobEffects.BLINDNESS);// && !playerIn.isRiding(); //We accept riding with the Naginata Sweep Alt-Attack
+		if (!flag1 && this.readyForSpecialAttack(playerIn) && !playerIn.isSprinting() && d0 <= (double) playerIn.getAIMoveSpeed())
 		{
 			double reach = (double)this.getReach();
-			List<EntityLivingBase> hitEnemies = player.getEntityWorld().getEntitiesWithinAABB(EntityLivingBase.class, player.getEntityBoundingBox().expand(reach, reach, reach));
+			List<EntityLivingBase> hitEnemies = playerIn.getEntityWorld().getEntitiesWithinAABB(EntityLivingBase.class, playerIn.getEntityBoundingBox().expand(reach, reach, reach));
 			for (EntityLivingBase entitylivingbase : hitEnemies)
 			{
-				double distanceTo = player.getDistanceToEntity(entitylivingbase);
+				double distanceTo = playerIn.getDistanceToEntity(entitylivingbase);
 				//calculations needed to check if the target is in front of the player.
-				float entityHitYaw = (float) ((Math.atan2(entitylivingbase.posZ - player.posZ, entitylivingbase.posX - player.posX) * (180 / Math.PI) - 90) % 360);
-	            float entityAttackingYaw = player.rotationYaw % 360;
+				float entityHitYaw = (float) ((Math.atan2(entitylivingbase.posZ - playerIn.posZ, entitylivingbase.posX - playerIn.posX) * (180 / Math.PI) - 90) % 360);
+	            float entityAttackingYaw = playerIn.rotationYaw % 360;
 	            if (entityHitYaw < 0) {
 	                entityHitYaw += 360;
 	            }
@@ -158,9 +144,9 @@ public class Naginata extends SwordCore implements IExtendedReach
 	            }
 	            float entityRelativeYaw = entityHitYaw - entityAttackingYaw;
 
-	            float xzDistance = (float) Math.sqrt((entitylivingbase.posZ - player.posZ) * (entitylivingbase.posZ - player.posZ) + (entitylivingbase.posX - player.posX) * (entitylivingbase.posX - player.posX));
-	            float entityHitPitch = (float) ((Math.atan2((entitylivingbase.posY - player.posY), xzDistance) * (180 / Math.PI)) % 360);
-	            float entityAttackingPitch = -player.rotationPitch % 360;
+	            float xzDistance = (float) Math.sqrt((entitylivingbase.posZ - playerIn.posZ) * (entitylivingbase.posZ - playerIn.posZ) + (entitylivingbase.posX - playerIn.posX) * (entitylivingbase.posX - playerIn.posX));
+	            float entityHitPitch = (float) ((Math.atan2((entitylivingbase.posY - playerIn.posY), xzDistance) * (180 / Math.PI)) % 360);
+	            float entityAttackingPitch = -playerIn.rotationPitch % 360;
 	            if (entityHitPitch < 0) {
 	                entityHitPitch += 360;
 	            }
@@ -172,35 +158,29 @@ public class Naginata extends SwordCore implements IExtendedReach
 	            boolean yawCheck = (entityRelativeYaw <= arc / 2 && entityRelativeYaw >= -arc / 2) || (entityRelativeYaw >= 360 - arc / 2 || entityRelativeYaw <= -360 + arc / 2);
 	            boolean pitchCheck = (entityRelativePitch <= arc / 2 && entityRelativePitch >= -arc / 2) || (entityRelativePitch >= 360 - arc / 2 || entityRelativePitch <= -360 + arc / 2);
 				
-				if (entitylivingbase != player && !player.isOnSameTeam(entitylivingbase)
+				if (entitylivingbase != playerIn && !playerIn.isOnSameTeam(entitylivingbase)
 						&& distanceTo <= reach && yawCheck && pitchCheck)
 				{
-					entitylivingbase.knockBack(player, 0.4F,
-							(double) MathHelper.sin(player.rotationYaw * 0.017453292F),
-							(double) (-MathHelper.cos(player.rotationYaw * 0.017453292F)));
-					ToolHelper.attackEntity(stack, this, player, entitylivingbase);
+					entitylivingbase.knockBack(playerIn, 0.4F,
+							(double) MathHelper.sin(playerIn.rotationYaw * 0.017453292F),
+							(double) (-MathHelper.cos(playerIn.rotationYaw * 0.017453292F)));
+					ToolHelper.attackEntity(playerIn.getHeldItem(hand), this, playerIn, entitylivingbase);
 				}
 			}
 			
-			player.getEntityWorld().playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, player.getSoundCategory(), 1.0f, 1.0f);
-			if (!player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).hasModifier(cooldown_debuff))
+			playerIn.getEntityWorld().playSound(null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, playerIn.getSoundCategory(), 1.0f, 1.0f);
+			if (!playerIn.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).hasModifier(cooldown_debuff))
 			{
-				player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).applyModifier(cooldown_debuff);
+				playerIn.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).applyModifier(cooldown_debuff);
 				
 			}
-			if (attackSpeed() > 0)
-			{
-				int speed = (int)Math.min(5, player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getAttributeValue());
-				ToolHelper.swingItem(speed, player);
-			}
-			
-			if (player instanceof EntityPlayer)
-			{
-				((EntityPlayer) player).spawnSweepParticles();
-				((EntityPlayer) player).addExhaustion(0.2F);
-				((EntityPlayer) player).resetCooldown();
-			}
+			playerIn.swingArm(hand);
+			playerIn.spawnSweepParticles();
+			playerIn.addExhaustion(0.2F);
+			playerIn.resetCooldown();
+			return ActionResult.newResult(EnumActionResult.SUCCESS, itemStackIn);
 		}
+		return ActionResult.newResult(EnumActionResult.PASS, itemStackIn);
 	}
 	
 	@Override
