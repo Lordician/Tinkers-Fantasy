@@ -12,6 +12,7 @@ import slimeknights.tconstruct.library.tools.ToolCore;
 public class MeleeClientProxy extends ClientProxy {
 
 	ToolBuildGuiInfo naginataBuildGUI;
+	ToolBuildGuiInfo bucklerBuildGUI;
 	
 	@Override
 	public void preInit(FMLPreInitializationEvent event)
@@ -39,12 +40,16 @@ public class MeleeClientProxy extends ClientProxy {
 	{
 		//Registering Naginata Tool Model
 		registerToolModel(TinkerFantasyMeleeWeapons.naginata);
+		//Registering Buckler Tool Model
+		registerToolModel(TinkerFantasyMeleeWeapons.buckler);
 	}
 	
 	private void createToolGuis()
 	{
 		//Naginata Build GUI
 		naginataBuildGUI = new ToolBuildGuiInfo(TinkerFantasyMeleeWeapons.naginata);
+		//Buckler Build GUI
+		bucklerBuildGUI = new ToolBuildGuiInfo(TinkerFantasyMeleeWeapons.buckler);
 	}
 	
 	private void setToolGuis()
@@ -54,18 +59,26 @@ public class MeleeClientProxy extends ClientProxy {
 		naginataBuildGUI.addSlotPosition(33 - 8, 42 - 10 + 4); //Handle_2
 		naginataBuildGUI.addSlotPosition(33 + 14, 42 - 10 - 2); //Guard
 		naginataBuildGUI.addSlotPosition(33 + 10 - 10, 42 + 10 + 6); //Blade
+		//Buckler Build GUI positions
+		bucklerBuildGUI.addSlotPosition(33 - 20 - 1, 42 + 20); // Edge
+		bucklerBuildGUI.addSlotPosition(33 + 20 - 5, 42 - 20 + 4); // Face
+		bucklerBuildGUI.addSlotPosition(33 - 2 - 1, 42 + 2); // Boss
 	}
 	
 	private void cleanToolGuis()
 	{
 		//CLearing Naginata Build GUI
 		naginataBuildGUI.positions.clear();
+		//CLearing Buckler Build GUI
+		bucklerBuildGUI.positions.clear();
 	}
 	
 	private void registerToolGuis()
 	{
 		//Registering Naginata Build GUI
 		TinkerRegistryClient.addToolBuilding(naginataBuildGUI);
+		//Registering Buckler Build GUI
+		TinkerRegistryClient.addToolBuilding(bucklerBuildGUI);
 	}
 	
 	public void reloadGuis()

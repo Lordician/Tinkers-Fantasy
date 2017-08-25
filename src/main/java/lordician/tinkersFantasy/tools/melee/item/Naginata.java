@@ -186,13 +186,9 @@ public class Naginata extends SwordCore implements IExtendedReach
 				//Cooldown regen'd, remove naginata attackspeed debuff
 				if (((EntityLivingBase) entityIn).getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).hasModifier(TinkerFantasyMeleeWeapons.cooldown_debuff))
 				{
-					System.out.println("Removing de-buff.");
 					((EntityLivingBase) entityIn).getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).removeModifier(TinkerFantasyMeleeWeapons.cooldown_debuff);
 				}
-				else
-					System.out.println(((EntityLivingBase) entityIn).getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getModifiers());
 			}
-			System.out.println(((EntityLivingBase) entityIn).getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getAttributeValue());
 		}
 		super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
 	}
