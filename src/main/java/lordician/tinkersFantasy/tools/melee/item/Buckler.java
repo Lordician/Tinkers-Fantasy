@@ -11,13 +11,11 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
@@ -39,11 +37,12 @@ import slimeknights.tconstruct.tools.TinkerTools;
 
 public class Buckler extends TinkerToolCore
 {
+	public static final float DURABILITY_MODIFIER = 1.4f;
+	public static final float ATTACK_ADDITION = 0.0f;
 	
-	public int cooldownTime()
-	{
-		return 100;
-	}
+	public static final float COOLDOWN_MODIFIER = 0.2F;
+	public static final float COOLDOWN_UNUSED_MODIFIER = 0.5F;
+	
 	
 	public Buckler(String name)
 	{
@@ -66,14 +65,14 @@ public class Buckler extends TinkerToolCore
 	public float damagePotential()
 	{
 		// TODO Auto-generated method stub
-		return 0.86f;
+		return 0.8f;
 	}
 
 	@Override
 	public double attackSpeed()
 	{
 		// TODO Auto-generated method stub
-		return 1.0d;
+		return 0.9d;
 	}
 	
 	@Nonnull
@@ -112,7 +111,10 @@ public class Buckler extends TinkerToolCore
 	@Override
 	protected ToolNBT buildTagData(List<Material> materials)
 	{
-		return buildDefaultTag(materials);
+		ToolNBT data = buildDefaultTag(materials);
+		data.attack += Buckler.ATTACK_ADDITION;
+		data.durability *= Buckler.DURABILITY_MODIFIER;
+		return data;
 	}
 	
 	//Now for the blocking part
@@ -141,14 +143,13 @@ public class Buckler extends TinkerToolCore
 			//Entity is blocking, so we parry.
 			if (attacker != null)
 			{
-				attacker.attackEntityFrom(DamageSource.causeThornsDamage(entity), event.getAmount() / 2.0f);
+				ToolHelper.attackEntity(buckler, this, entity, attacker);
 				damage = damage * 3 / 2;
 				if (attacker instanceof EntityLivingBase)
 				{
 					EntityLivingBase attackerLivingBase = (EntityLivingBase) attacker;
 					attackerLivingBase.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS,50,3));
 					attackerLivingBase.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE,50,4));
-					
 				}
 			}
 		}
@@ -160,7 +161,7 @@ public class Buckler extends TinkerToolCore
 		
 		//In contrary to the Battlesign, from where i took most of this code, the buckler does not reflect.
 		ToolHelper.damageTool(buckler, damage, entity);
-		this.disableShield(true, entity);
+		this.disableShield(true, entity, buckler);
 	}
 	
 	@SubscribeEvent
@@ -219,8 +220,10 @@ public class Buckler extends TinkerToolCore
 			if (attacker instanceof EntityLivingBase)
 			{
 				EntityLivingBase attackerLiving = (EntityLivingBase) attacker;
-				attackerLiving.knockBack(entityIn, 0.2F, entityIn.posX - attackerLiving.posX, entityIn.posZ - attackerLiving.posZ);
+				attackerLiving.knockBack(entityIn, 0.5F * this.knockback(), entityIn.posX - attackerLiving.posX, entityIn.posZ - attackerLiving.posZ);
 			}
+			EnumHand shieldHand = entityIn.getHeldItemMainhand().getItem() == this ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND;
+			buckler = entityIn.getHeldItem(shieldHand);
 		}
 		else
 		{
@@ -231,7 +234,7 @@ public class Buckler extends TinkerToolCore
 		
 	    
 	    ToolHelper.damageTool(buckler, damage, entityIn);
-	    this.disableShield(true, entityIn);
+	    this.disableShield(true, entityIn, buckler);
 	}
 	
 	protected boolean shouldBlockDamage(Entity entity)
@@ -286,7 +289,7 @@ public class Buckler extends TinkerToolCore
 	}
 	
 	//Taken from EntityPlayer to ensure compatibility (and change cooldown if needed)
-	public void disableShield(boolean alwaysDisable, EntityLivingBase entityIn)
+	public void disableShield(boolean alwaysDisable, EntityLivingBase entityIn, ItemStack stack)
     {
         float f = 0.25F + (float)EnchantmentHelper.getEfficiencyModifier(entityIn) * 0.05F;
 
@@ -301,11 +304,22 @@ public class Buckler extends TinkerToolCore
     		{
     			EntityPlayer player = (EntityPlayer) entityIn;
     			
-    			player.getCooldownTracker().setCooldown(this, (int)(this.cooldownTime()/player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getAttributeValue()));
+    			int cooldownTime = this.getShieldCooldownTime(entityIn, stack);
+    			player.getCooldownTracker().setCooldown(this, cooldownTime);
     		}
             entityIn.world.setEntityState(entityIn, (byte)29);
         }
     }
+	
+	public int getShieldCooldownTime(EntityLivingBase entityIn, ItemStack stack)
+	{
+		float entityAttackSpeed = (float)entityIn.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getAttributeValue();
+		float toolAttackSpeed = ToolHelper.getActualAttackSpeed(stack);
+		float totalAttackSpeed = toolAttackSpeed * entityAttackSpeed * Buckler.COOLDOWN_MODIFIER;
+		int cooldownTime = (int)(1 / totalAttackSpeed * 20); //Attackspeed tick amount is 20
+		
+		return cooldownTime;
+	}
 	
 	@Override
 	public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving)
@@ -315,10 +329,29 @@ public class Buckler extends TinkerToolCore
 			if (entityLiving instanceof EntityPlayer)
 			{
 				EntityPlayer player = (EntityPlayer) entityLiving;
-				player.getCooldownTracker().setCooldown(this, (int)((this.cooldownTime()/2)/player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getAttributeValue()));
+				int cooldownTime = (int)(this.getShieldCooldownTime(entityLiving, stack) * Buckler.COOLDOWN_UNUSED_MODIFIER);
+				player.getCooldownTracker().setCooldown(this, cooldownTime);
 				
 			}
 		}
 		return super.onItemUseFinish(stack, worldIn, entityLiving);
 	}
+	
+	@Override
+	public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityLivingBase entityLiving, int timeLeft)
+	{
+		if (entityLiving.isHandActive())
+		{
+			if (entityLiving instanceof EntityPlayer)
+			{
+				EntityPlayer player = (EntityPlayer) entityLiving;
+				int cooldownTime = (int)(this.getShieldCooldownTime(entityLiving, stack) * Buckler.COOLDOWN_UNUSED_MODIFIER);
+				player.getCooldownTracker().setCooldown(this, cooldownTime);
+				
+			}
+		}
+		super.onPlayerStoppedUsing(stack, worldIn, entityLiving, timeLeft);
+	}
+	
+	
 }

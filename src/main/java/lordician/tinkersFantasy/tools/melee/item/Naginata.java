@@ -34,7 +34,7 @@ public class Naginata extends SwordCore implements IExtendedReach
 	public static final float DURABILITY_MODIFIER = 1.2f;
 	public static final float ATTACK_ADDITION = 1.0f;
 	
-	public static double defaultAttackSpeed = 1.4d;
+	public static double defaultAttackSpeed = 1.0d;
 	
 	public Naginata(String name)
 	{
@@ -68,7 +68,7 @@ public class Naginata extends SwordCore implements IExtendedReach
 	@Override
 	public float damagePotential()
 	{
-		return 0.8f;
+		return 1.0f;
 	}
 	
 	@Override
