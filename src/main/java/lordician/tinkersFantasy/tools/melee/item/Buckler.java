@@ -45,7 +45,7 @@ public class Buckler extends TinkerToolCore
 	public static final float DURABILITY_MODIFIER = 1.4f;
 	public static final float ATTACK_ADDITION = 0.0f;
 	
-	public static final float COOLDOWN_MODIFIER = 0.2F;
+	public static final float COOLDOWN_ATTACKSPEED_MODIFIER = 0.2F;
 	public static final float COOLDOWN_UNUSED_MODIFIER = 0.5F;
 	
 	
@@ -69,14 +69,12 @@ public class Buckler extends TinkerToolCore
 	@Override
 	public float damagePotential()
 	{
-		// TODO Auto-generated method stub
 		return 0.8f;
 	}
 
 	@Override
 	public double attackSpeed()
 	{
-		// TODO Auto-generated method stub
 		return 0.9d;
 	}
 	
@@ -344,7 +342,7 @@ public class Buckler extends TinkerToolCore
 	{
 		float entityAttackSpeed = (float)entityIn.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getAttributeValue();
 		float toolAttackSpeed = ToolHelper.getActualAttackSpeed(stack);
-		float totalAttackSpeed = toolAttackSpeed * entityAttackSpeed * Buckler.COOLDOWN_MODIFIER;
+		float totalAttackSpeed = toolAttackSpeed * entityAttackSpeed * Buckler.COOLDOWN_ATTACKSPEED_MODIFIER;
 		int cooldownTime = (int)(1 / totalAttackSpeed * 20); //Attackspeed tick amount is 20
 		
 		return cooldownTime;
