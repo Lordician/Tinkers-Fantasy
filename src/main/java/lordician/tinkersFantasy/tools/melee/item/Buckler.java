@@ -12,6 +12,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import slimeknights.tconstruct.library.TinkerRegistry;
+import slimeknights.tconstruct.library.client.particle.Particles;
 import slimeknights.tconstruct.library.tinkering.Category;
 import slimeknights.tconstruct.library.tinkering.PartMaterialType;
 import slimeknights.tconstruct.library.traits.ITrait;
@@ -98,6 +99,8 @@ public class Buckler extends ShieldCore {
 			attackerLivingBase.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS,50,3));
 			attackerLivingBase.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE,50,4));
 		}
+		//We also want to see an effect after we bash people away.
+		TinkerTools.proxy.spawnAttackParticle(Particles.FRYPAN_ATTACK, entityIn, 0.6d);
 		
 		disableShield(true, entityIn, shield);
 	}
