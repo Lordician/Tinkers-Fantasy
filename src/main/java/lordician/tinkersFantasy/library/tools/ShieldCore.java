@@ -213,7 +213,7 @@ public abstract class ShieldCore extends TinkersFantasyTool {
 			}
 			else if (damageLocation != null) {
 				
-				damageDirection = damageLocation.subtract(new Vec3d(entityIn.posX, entityIn.posY, entityIn.posZ));
+				damageDirection = damageLocation.subtract(entityIn.getPositionVector());
 			}
 			
 			if (damageDirection != null) {

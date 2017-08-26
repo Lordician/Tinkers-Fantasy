@@ -28,10 +28,11 @@ import slimeknights.tconstruct.library.tools.ToolNBT;
 import slimeknights.tconstruct.library.utils.ToolHelper;
 import slimeknights.tconstruct.tools.TinkerTools;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class Naginata extends TinkersFantasySwordCore implements IExtendedReach
 {
-	public static double DEFAULT_ATTACKSPEED = 0.8D;
+	public static double DEFAULT_ATTACKSPEED = 0.9D;
 	
 	public Naginata(String name)
 	{
@@ -48,7 +49,7 @@ public class Naginata extends TinkersFantasySwordCore implements IExtendedReach
 	}
 	
 	public float attackAddition() {
-		return 1.0F;
+		return 2.0F;
 	}
 
 	@Override
@@ -73,13 +74,13 @@ public class Naginata extends TinkersFantasySwordCore implements IExtendedReach
 	@Override
 	public float damagePotential()
 	{
-		return 1.0f;
+		return 0.95f;
 	}
 	
 	@Override
 	public float damageCutoff()
 	{
-		return 15.0f;
+		return 16.0f;
 	}
 
 	@Override
@@ -195,6 +196,31 @@ public class Naginata extends TinkersFantasySwordCore implements IExtendedReach
 			}
 		}
 		super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
+	}
+	
+	@Override
+	public boolean dealDamage(ItemStack stack, EntityLivingBase player, Entity entity, float damage) {
+		//We want to 'nerf' the Naginata on short range to make shorter range weapons more interesting on their range and this weapon powerful at long ranges.
+		Vec3d playerPos = player.getPositionVector();
+		Vec3d entityPos = entity.getPositionVector();
+		float distance = (float)playerPos.subtract(entityPos).lengthSquared();
+		float minDistance = 5.0F;
+		//This weapon needs to be at least at sword reach (or above, which means 5+) to do full damage
+		
+		distance -= minDistance * minDistance;
+		float damageModifier = 1.0F;
+		if (distance != 0.0F) {
+			damageModifier = 1.0F - (-distance / (minDistance * minDistance));
+		}
+		float damageAddition = damage * 0.2F;
+		damageAddition -= damageAddition * damageModifier;
+		System.out.println("PRE: " + damage);
+		System.out.println("ADD: " + damageAddition);
+		System.out.println("MOD: " + damageModifier);
+		damage -= damageAddition;
+		
+		System.out.println("FINAL: " + damage);
+		return super.dealDamage(stack, player, entity, damage);
 	}
 
 	@Override
