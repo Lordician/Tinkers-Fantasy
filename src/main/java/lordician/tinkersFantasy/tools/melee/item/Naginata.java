@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import lordician.tinkersFantasy.common.item.IExtendedReach;
+import lordician.tinkersFantasy.library.tools.TinkersFantasySwordCore;
 import lordician.tinkersFantasy.tools.melee.TinkerFantasyMeleeWeapons;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -23,18 +24,14 @@ import slimeknights.tconstruct.library.materials.Material;
 import slimeknights.tconstruct.library.materials.MaterialTypes;
 import slimeknights.tconstruct.library.tinkering.Category;
 import slimeknights.tconstruct.library.tinkering.PartMaterialType;
-import slimeknights.tconstruct.library.tools.SwordCore;
 import slimeknights.tconstruct.library.tools.ToolNBT;
 import slimeknights.tconstruct.library.utils.ToolHelper;
 import slimeknights.tconstruct.tools.TinkerTools;
 import net.minecraft.util.math.MathHelper;
 
-public class Naginata extends SwordCore implements IExtendedReach
+public class Naginata extends TinkersFantasySwordCore implements IExtendedReach
 {
-	public static final float DURABILITY_MODIFIER = 1.2f;
-	public static final float ATTACK_ADDITION = 1.0f;
-	
-	public static double defaultAttackSpeed = 1.0d;
+	public static double DEFAULT_ATTACKSPEED = 0.8D;
 	
 	public Naginata(String name)
 	{
@@ -44,6 +41,14 @@ public class Naginata extends SwordCore implements IExtendedReach
 				PartMaterialType.head(TinkerTools.swordBlade)); //Blade
 		this.addCategory(Category.WEAPON);
 		this.setUnlocalizedName(name).setRegistryName(name);
+	}
+	
+	public float durabilityModifier() {
+		return 1.2F;
+	}
+	
+	public float attackAddition() {
+		return 1.0F;
 	}
 
 	@Override
@@ -59,8 +64,8 @@ public class Naginata extends SwordCore implements IExtendedReach
 		data.handle(handle0, handle1);
 		data.extra(guard);
 		
-		data.attack += ATTACK_ADDITION;
-		data.durability *= DURABILITY_MODIFIER;
+		data.attack += attackAddition();
+		data.durability *= durabilityModifier();
 		
 		return data;
 	}
@@ -80,7 +85,7 @@ public class Naginata extends SwordCore implements IExtendedReach
 	@Override
 	public double attackSpeed()
 	{
-		return Naginata.defaultAttackSpeed;
+		return Naginata.DEFAULT_ATTACKSPEED;
 	}
 	
 	@Override
@@ -92,7 +97,7 @@ public class Naginata extends SwordCore implements IExtendedReach
 	@Override
 	public float getRepairModifierForPart(int index)
 	{
-		return DURABILITY_MODIFIER;
+		return durabilityModifier();
 	}
 	
 	//Extended Reach Implementation!
@@ -150,7 +155,7 @@ public class Naginata extends SwordCore implements IExtendedReach
 				boolean pitchCheck = (entityRelativePitch <= arc / 2 && entityRelativePitch >= -arc / 2) || (entityRelativePitch >= 360 - arc / 2 || entityRelativePitch <= -360 + arc / 2);
 
 				if (entitylivingbase != playerIn && !playerIn.isOnSameTeam(entitylivingbase)
-						&& distanceTo <= reach && yawCheck && pitchCheck)
+						&& distanceTo <= reach && yawCheck && pitchCheck && playerIn.canEntityBeSeen(entitylivingbase))
 				{
 					entitylivingbase.knockBack(playerIn, 0.4F,
 							(double) MathHelper.sin(playerIn.rotationYaw * 0.017453292F),
@@ -178,7 +183,6 @@ public class Naginata extends SwordCore implements IExtendedReach
 	public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
 	{
 		// has to be done in onUpdate because onTickUsing is too early and gets overwritten. bleh.
-		preventSlowDown(entityIn, 0.5f);
 		if (entityIn instanceof EntityPlayer)
 		{
 			if (((EntityPlayer) entityIn).getCooledAttackStrength(0.5F) > 0.9F)
@@ -191,6 +195,11 @@ public class Naginata extends SwordCore implements IExtendedReach
 			}
 		}
 		super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
+	}
+
+	@Override
+	public float useMovementSpeedModifier() {
+		return 0.5F;
 	}
 	
 	

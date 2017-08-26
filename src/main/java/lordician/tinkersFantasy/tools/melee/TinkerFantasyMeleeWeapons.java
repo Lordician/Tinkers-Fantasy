@@ -32,7 +32,7 @@ public class TinkerFantasyMeleeWeapons
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		registerTools();
-		cooldown_debuff = new AttributeModifier(UUID.nameUUIDFromBytes(cooldown_debuff_name.getBytes()), cooldown_debuff_name, -Naginata.defaultAttackSpeed/1.5, 0);
+		cooldown_debuff = new AttributeModifier(UUID.nameUUIDFromBytes(cooldown_debuff_name.getBytes()), cooldown_debuff_name, -Naginata.DEFAULT_ATTACKSPEED/1.5, 0);
 		proxy.preInit(event);
 		registerEvents();
 	}
