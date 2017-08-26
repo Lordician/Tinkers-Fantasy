@@ -14,6 +14,7 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -21,17 +22,21 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import slimeknights.tconstruct.library.TinkerRegistry;
 import slimeknights.tconstruct.library.materials.Material;
 import slimeknights.tconstruct.library.tinkering.Category;
 import slimeknights.tconstruct.library.tinkering.PartMaterialType;
 import slimeknights.tconstruct.library.tools.TinkerToolCore;
 import slimeknights.tconstruct.library.tools.ToolNBT;
+import slimeknights.tconstruct.library.traits.ITrait;
+import slimeknights.tconstruct.library.utils.TagUtil;
 import slimeknights.tconstruct.library.utils.ToolHelper;
 import slimeknights.tconstruct.tools.TinkerTools;
 
@@ -138,6 +143,8 @@ public class Buckler extends TinkerToolCore
 		ItemStack buckler = entity.getActiveItemStack();
 		int damage = event.getAmount() < 2f ? 1 : Math.round(event.getAmount() / 2f);
 		
+		event.setAmount(event.getAmount() * 0.7f);
+		
 		if (shouldBlockDamage(entity))
 		{
 			//Entity is blocking, so we parry.
@@ -177,7 +184,8 @@ public class Buckler extends TinkerToolCore
 		EntityLivingBase entityIn = event.getEntityLiving();
 		Entity attacker = event.getSource().getEntity();
 		ItemStack buckler = entityIn.getActiveItemStack();
-		int damage = (int) event.getAmount();
+		float damage = event.getAmount();
+		int toolDamage = (int)damage;
 		
 		if (event.getSource().isProjectile())
 		{
@@ -200,7 +208,7 @@ public class Buckler extends TinkerToolCore
 		    {
 		    	return;
 		    }
-			
+			damage = 0.0F;
 		}
 		else if (!shouldBlockDamage(entityIn) && shouldAutoBlockDamage(entityIn))
 		{
@@ -224,6 +232,22 @@ public class Buckler extends TinkerToolCore
 			}
 			EnumHand shieldHand = entityIn.getHeldItemMainhand().getItem() == this ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND;
 			buckler = entityIn.getHeldItem(shieldHand);
+			
+			//onBlock traits need to be activated still, but Tinker's Construct hates NPC's wielding tools or something.
+			if (entityIn instanceof EntityPlayer)
+			{
+				EntityPlayer playerIn = (EntityPlayer) entityIn;
+				NBTTagList list = TagUtil.getTraitsTagList(buckler);
+		        for(int i = 0; i < list.tagCount(); i++)
+		        {
+					ITrait trait = TinkerRegistry.getTrait(list.getStringTagAt(i));
+					if(trait != null)
+					{
+						trait.onBlock(buckler, playerIn, new LivingHurtEvent(entityIn, event.getSource(), event.getAmount()));
+					}
+		        }
+			}
+			damage = 0.0F;
 		}
 		else
 		{
@@ -232,8 +256,13 @@ public class Buckler extends TinkerToolCore
 	    // caught that bastard! block it!
 	    event.setCanceled(true);
 		
+	    if (damage != 0.0F)
+	    {
+	    	LivingHurtEvent newHurtEvent = new LivingHurtEvent(entityIn, event.getSource(), damage);
+	    	MinecraftForge.EVENT_BUS.post(newHurtEvent);
+	    }
 	    
-	    ToolHelper.damageTool(buckler, damage, entityIn);
+	    ToolHelper.damageTool(buckler, toolDamage, entityIn);
 	    this.disableShield(true, entityIn, buckler);
 	}
 	
