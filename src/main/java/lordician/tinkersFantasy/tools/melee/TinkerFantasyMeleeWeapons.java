@@ -6,6 +6,7 @@ import com.google.common.eventbus.Subscribe;
 
 import lordician.tinkersFantasy.common.CommonProxy;
 import lordician.tinkersFantasy.tools.melee.item.Buckler;
+import lordician.tinkersFantasy.tools.melee.item.Kiteshield;
 import lordician.tinkersFantasy.tools.melee.item.Naginata;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraftforge.common.MinecraftForge;
@@ -24,6 +25,7 @@ public class TinkerFantasyMeleeWeapons
 	
 	public static ToolCore naginata;
 	public static ToolCore buckler;
+	public static ToolCore kiteshield;
 	
 	public static final String cooldown_debuff_name = "naginata_attackspeed_down";
 	public static AttributeModifier cooldown_debuff;
@@ -60,6 +62,10 @@ public class TinkerFantasyMeleeWeapons
 		buckler = new Buckler("buckler");
 		registerTool(buckler);
 		
+		//Kiteshield registering
+		kiteshield = new Kiteshield("kiteshield");
+		registerTool(kiteshield);
+		
 	}
 	
 	private void registerToolBuilding()
@@ -69,6 +75,9 @@ public class TinkerFantasyMeleeWeapons
 		
 		//Buckler building registering (all)
 		TinkerRegistry.registerToolCrafting(buckler);
+		
+		//Kiteshield building registering (forge only)
+		TinkerRegistry.registerToolForgeCrafting(kiteshield);
 	}
 	
 	protected void registerTool(ToolCore tool)
@@ -80,7 +89,8 @@ public class TinkerFantasyMeleeWeapons
 	
 	private void registerEvents()
 	{
-		//Buckler Events
+		//Shield Events
 		MinecraftForge.EVENT_BUS.register(buckler);
+		MinecraftForge.EVENT_BUS.register(kiteshield);
 	}
 }

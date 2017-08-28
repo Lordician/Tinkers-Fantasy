@@ -13,6 +13,7 @@ public class MeleeClientProxy extends ClientProxy {
 
 	ToolBuildGuiInfo naginataBuildGUI;
 	ToolBuildGuiInfo bucklerBuildGUI;
+	ToolBuildGuiInfo kiteshieldBuildGUI;
 	
 	@Override
 	public void preInit(FMLPreInitializationEvent event)
@@ -42,6 +43,8 @@ public class MeleeClientProxy extends ClientProxy {
 		registerToolModel(TinkerFantasyMeleeWeapons.naginata);
 		//Registering Buckler Tool Model
 		registerToolModel(TinkerFantasyMeleeWeapons.buckler);
+		//Registering Kiteshield Tool Model
+		registerToolModel(TinkerFantasyMeleeWeapons.kiteshield);
 	}
 	
 	private void createToolGuis()
@@ -50,6 +53,8 @@ public class MeleeClientProxy extends ClientProxy {
 		naginataBuildGUI = new ToolBuildGuiInfo(TinkerFantasyMeleeWeapons.naginata);
 		//Buckler Build GUI
 		bucklerBuildGUI = new ToolBuildGuiInfo(TinkerFantasyMeleeWeapons.buckler);
+		//Kiteshield Build GUI
+		kiteshieldBuildGUI = new ToolBuildGuiInfo(TinkerFantasyMeleeWeapons.kiteshield);
 	}
 	
 	private void setToolGuis()
@@ -63,6 +68,11 @@ public class MeleeClientProxy extends ClientProxy {
 		bucklerBuildGUI.addSlotPosition(33 - 20 - 1, 42 + 20); // Edge
 		bucklerBuildGUI.addSlotPosition(33 + 20 - 5, 42 - 20 + 4); // Face
 		bucklerBuildGUI.addSlotPosition(33 - 2 - 1, 42 + 2); // Boss
+		//Kiteshield Build GUI positions
+		kiteshieldBuildGUI.addSlotPosition(33 - 10 - 14, 42 + 10 + 12); //Handle_1
+		kiteshieldBuildGUI.addSlotPosition(33 - 8, 42 - 10 + 4); //Handle_2
+		kiteshieldBuildGUI.addSlotPosition(33 + 14, 42 - 10 - 2); //Guard
+		kiteshieldBuildGUI.addSlotPosition(33 + 10 - 10, 42 + 10 + 6); //Blade
 	}
 	
 	private void cleanToolGuis()
@@ -71,6 +81,8 @@ public class MeleeClientProxy extends ClientProxy {
 		naginataBuildGUI.positions.clear();
 		//CLearing Buckler Build GUI
 		bucklerBuildGUI.positions.clear();
+		//CLearing Kiteshield Build GUI
+		kiteshieldBuildGUI.positions.clear();
 	}
 	
 	private void registerToolGuis()
@@ -79,6 +91,8 @@ public class MeleeClientProxy extends ClientProxy {
 		TinkerRegistryClient.addToolBuilding(naginataBuildGUI);
 		//Registering Buckler Build GUI
 		TinkerRegistryClient.addToolBuilding(bucklerBuildGUI);
+		//Registering Kiteshield Build GUI
+		TinkerRegistryClient.addToolBuilding(kiteshieldBuildGUI);
 	}
 	
 	public void reloadGuis()

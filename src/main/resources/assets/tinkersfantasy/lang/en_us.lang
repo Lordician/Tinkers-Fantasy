@@ -4,3 +4,5 @@ item.naginata.name=Naginata
 item.naginata.desc=Staff-like weapon with a sword blade on top.
 item.buckler.name=Buckler
 item.buckler.desc=A shield used for parrying in melee combat.
+item.kiteshield.name=Kiteshield
+item.kiteshield.dec=A shield designed for a bit more maneuverability.
