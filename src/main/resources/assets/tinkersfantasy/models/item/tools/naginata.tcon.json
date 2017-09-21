@@ -3,9 +3,9 @@
     {
     	"layer0": "tinkersfantasy:items/naginata/handle_1",
     	"layer1": "tinkersfantasy:items/naginata/handle_2",
-    	"layer2": "tinkersfantasy:items/naginata/guard",
-    	"layer3": "tinkersfantasy:items/naginata/blade",
-    	"broken1": "tinkersfantasy:items/naginata/broken_blade"
+    	"layer2": "tinkersfantasy:items/naginata/blade",
+    	"layer3": "tinkersfantasy:items/naginata/guard",
+    	"broken2": "tinkersfantasy:items/naginata/broken_blade"
     },
     "display": {
     	"thirdperson_righthand": {

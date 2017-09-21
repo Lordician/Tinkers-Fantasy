@@ -108,11 +108,13 @@ public class Buckler extends ShieldCore {
 	@Override
 	protected void onUserAttacked(LivingAttackEvent event) {
 		super.onUserAttacked(event);
+		System.out.println("AUTOBLOCK CHECK START");
 		EntityLivingBase entityIn = event.getEntityLiving();
 		DamageSource damageSourceIn = event.getSource();
 		//Custom buckler stuff
-		if (isSourceBlockable(entityIn, damageSourceIn)) {
+		if (!isSourceBlockable(entityIn, damageSourceIn)) {
 			//Damage is unblockable. So we stop.
+			System.out.println("SOURCE UNBLOCKABLE");
 			return;
 		}
 		
@@ -123,6 +125,7 @@ public class Buckler extends ShieldCore {
 		boolean shouldBlock = shouldBlockDamage(entityIn);
 		boolean shouldAutoBlock = shouldAutoBlockDamage(entityIn);
 		if (!isProjectile) {
+			System.out.println("NOT PROJECTILE");
 			if (!shouldBlock && shouldAutoBlock) {
 				System.out.println("AUTOBLOCK");
 				if (shield.getItem() != this) {

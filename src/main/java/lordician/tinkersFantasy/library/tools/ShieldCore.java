@@ -199,7 +199,7 @@ public abstract class ShieldCore extends TinkersFantasyTool {
 	
 	//Oh look, EntityLivingBase (Vanilla Minecraft) canBlockDamageSource code, but slightly edited so we don't check if the entity is actively blocking!
 	protected boolean isSourceBlockable(EntityLivingBase entityIn, DamageSource damageSourceIn) {
-		if (damageSourceIn.isUnblockable() || damageSourceIn.getSourceOfDamage() == null || damageSourceIn.isExplosion() || damageSourceIn.isMagicDamage()) {
+		if (!damageSourceIn.isUnblockable() && damageSourceIn.getSourceOfDamage() != null && !damageSourceIn.isExplosion() && !damageSourceIn.isMagicDamage()) {
 			//Okay, so the source is blockable and there is a source of damage
 			Vec3d look = entityIn.getLook(1.0F);
 			Vec3d damageLocation = damageSourceIn.getDamageLocation();
@@ -213,7 +213,7 @@ public abstract class ShieldCore extends TinkersFantasyTool {
 			}
 			else if (damageLocation != null) {
 				
-				damageDirection = damageLocation.subtract(entityIn.getPositionVector());
+				damageDirection = entityIn.getPositionVector().subtract(damageLocation);
 			}
 			
 			if (damageDirection != null) {
